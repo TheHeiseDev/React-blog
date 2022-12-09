@@ -2,10 +2,11 @@ import "./BlogContent.css";
 import { Component } from "react";
 import { posts } from "../shared/projectData";
 import { BlogCard } from "./components/BlogCard";
+import { AddPostForm } from "./components/AddPostForm";
 
 export class BlogContent extends Component {
   state = {
-    showBlog: true,
+    showAddForm: false,
     blogArray: JSON.parse(localStorage.getItem("BlogPosts")) || posts,
   };
 
@@ -20,14 +21,6 @@ export class BlogContent extends Component {
     localStorage.setItem("BlogPosts", JSON.stringify(temp));
   };
 
-  toogleBlog = () => {
-    this.setState(({ showBlog }) => {
-      return {
-        showBlog: !showBlog,
-      };
-    });
-  };
-
   deletePost = (pos) => {
     if (window.confirm("Удалить: " + this.state.blogArray[pos].title + " ?")) {
       const temp = [...this.state.blogArray];
@@ -40,6 +33,17 @@ export class BlogContent extends Component {
       });
       localStorage.setItem("BlogPosts", JSON.stringify(temp));
     }
+  };
+  handleAddFormShow = () => {
+    this.setState({
+      showAddForm: true,
+    });
+  };
+
+  handleAddFormHide = () => {
+    this.setState({
+      showAddForm: false,
+    });
   };
 
   render() {
@@ -58,13 +62,16 @@ export class BlogContent extends Component {
 
     return (
       <>
-        <button onClick={() => this.toogleBlog()}>{this.state.showBlog ? "Блок показан" : "Блок скрыт"}</button>
-        {this.state.showBlog ? (
-          <>
-            <h1>Simple Blog</h1>
-            <div className="posts">{blogPosts}</div>
-          </>
-        ) : null}
+        {this.state.showAddForm ? <AddPostForm handleAddFormHide={this.handleAddFormHide} /> : null}
+
+        <>
+          <h1>Simple Blog</h1>
+          <button onClick={this.handleAddFormShow} className="blackBtn">
+            Создать новый пост
+          </button>
+
+          <div className="posts">{blogPosts}</div>
+        </>
       </>
     );
   }

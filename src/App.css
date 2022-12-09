@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap");
 * {
   box-sizing: border-box;
 }
@@ -20,10 +20,12 @@ button {
   border: none;
   background-color: unset;
   cursor: pointer;
+  font-family: "Nunito", sans-serif;
 }
 
 input,
 textarea {
+  font-family: "Nunito", sans-serif;
   outline: unset;
   border: 0;
 }

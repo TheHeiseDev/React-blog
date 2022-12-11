@@ -8,6 +8,7 @@ export class BlogContent extends Component {
   state = {
     showAddForm: false,
     blogArray: [],
+    IsPending: false,
   };
 
   likePost = (pos) => {
@@ -22,15 +23,10 @@ export class BlogContent extends Component {
     });
   };
 
-  deletePost = (pos) => {
-    if (window.confirm("Удалить: " + this.state.blogArray[pos].title + " ?")) {
-      this.setState((state) => {
-        const temp = [...state.blogArray];
-        temp.splice(pos, 1);
-        localStorage.setItem("BlogPosts", JSON.stringify(temp));
-        return {
-          blogArray: temp,
-        };
+  deletePost = (blogPost) => {
+    if (window.confirm(`Удалить: ${blogPost.title}?`)) {
+      axios.delete(`https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb/${blogPost.id}`).then((response) => {
+        this.fetchPosts();
       });
     }
   };
@@ -63,18 +59,27 @@ export class BlogContent extends Component {
     });
   };
 
-  componentDidMount() {
-    window.addEventListener("keyup", this.handleEscpe);
+  fetchPosts = () => {
+    this.setState({
+      IsPending: true,
+    });
+
     axios
       .get("https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb")
       .then((response) => {
         this.setState({
           blogArray: response.data,
+          IsPending: false,
         });
       })
       .catch((error) => {
         console.error("Ошибка запроса на сервер: " + error);
       });
+  };
+
+  componentDidMount() {
+    window.addEventListener("keyup", this.handleEscpe);
+    this.fetchPosts();
   }
   componentWillUnmount() {
     window.removeEventListener("keyup", this.handleEscpe);
@@ -89,7 +94,7 @@ export class BlogContent extends Component {
           description={item.description}
           likePost={() => this.likePost(pos)}
           liked={item.liked}
-          deletePost={() => this.deletePost(pos)}
+          deletePost={() => this.deletePost(item)}
         />
       );
     });
@@ -113,7 +118,9 @@ export class BlogContent extends Component {
               Создать новый пост
             </button>
           </div>
-
+{
+  this.state.IsPending && <h2>Подождите... </h2>
+}
           <div className="posts">{blogPosts}</div>
         </>
       </div>

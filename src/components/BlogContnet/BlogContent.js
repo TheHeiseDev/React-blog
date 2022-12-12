@@ -3,6 +3,7 @@ import { Component } from "react";
 import { BlogCard } from "./components/BlogCard";
 import { AddPostForm } from "./components/AddPostForm";
 import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export class BlogContent extends Component {
   state = {
@@ -11,22 +12,47 @@ export class BlogContent extends Component {
     IsPending: false,
   };
 
-  likePost = (pos) => {
-    this.setState((state) => {
-      const temp = JSON.parse(JSON.stringify(state.blogArray));
-      temp[pos].liked = !temp[pos].liked;
-      localStorage.setItem("BlogPosts", JSON.stringify(temp));
+  likePost = (blogPost) => {
+    const temp = { ...blogPost };
+    temp.liked = !temp.liked;
 
-      return {
-        blogArray: temp,
-      };
+    axios
+      .put(`https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb/${blogPost.id}`, temp)
+      .then((response) => {
+        console.log(response.data);
+        this.fetchPosts();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  addNewBlogPost = (blogPost) => {
+    this.setState({
+      IsPending: true,
     });
+    axios
+      .post(`https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb`, blogPost)
+      .then((response) => {
+        console.log(response.data);
+        this.fetchPosts();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   deletePost = (blogPost) => {
+    this.setState({
+      IsPending: true,
+    });
     if (window.confirm(`Удалить: ${blogPost.title}?`)) {
       axios.delete(`https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb/${blogPost.id}`).then((response) => {
         this.fetchPosts();
+      });
+    } else {
+      this.setState({
+        IsPending: false,
       });
     }
   };
@@ -48,22 +74,7 @@ export class BlogContent extends Component {
     }
   };
 
-  addNewBlogPost = (blogPost) => {
-    this.setState((state) => {
-      const posts = [...state.blogArray];
-      posts.push(blogPost);
-      localStorage.setItem("BlogPosts", JSON.stringify(posts));
-      return {
-        blogArray: posts,
-      };
-    });
-  };
-
   fetchPosts = () => {
-    this.setState({
-      IsPending: true,
-    });
-
     axios
       .get("https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb")
       .then((response) => {
@@ -92,7 +103,7 @@ export class BlogContent extends Component {
           key={item.id}
           title={item.title}
           description={item.description}
-          likePost={() => this.likePost(pos)}
+          likePost={() => this.likePost(item)}
           liked={item.liked}
           deletePost={() => this.deletePost(item)}
         />
@@ -118,10 +129,11 @@ export class BlogContent extends Component {
               Создать новый пост
             </button>
           </div>
-{
-  this.state.IsPending && <h2>Подождите... </h2>
-}
-          <div className="posts">{blogPosts}</div>
+
+          <div className="posts" style={{ opacity: this.state.IsPending && 0.5 }}>
+            {blogPosts}
+          </div>
+          {this.state.IsPending && <CircularProgress className="preloader" />}
         </>
       </div>
     );

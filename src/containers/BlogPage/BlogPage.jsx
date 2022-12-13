@@ -1,15 +1,37 @@
-import "./BlogContent.css";
+import "./BlogPage.css";
 import { Component } from "react";
 import { BlogCard } from "./components/BlogCard";
 import { AddPostForm } from "./components/AddPostForm";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
+import { EditFormPost } from "./components/EditFormPost";
+import { postUrl } from "../../components/shared/projectData";
 
-export class BlogContent extends Component {
+let controller;
+export class BlogPage extends Component {
   state = {
     showAddForm: false,
+    showEditForm: false,
     blogArray: [],
     IsPending: false,
+    selectedPost: {},
+  };
+
+  fetchPosts = () => {
+    controller = new AbortController();
+    axios
+      .get(postUrl, {
+        signal: controller.signal,
+      })
+      .then((response) => {
+        this.setState({
+          blogArray: response.data,
+          IsPending: false,
+        });
+      })
+      .catch((error) => {
+        console.error("Ошибка запроса на сервер: " + error);
+      });
   };
 
   likePost = (blogPost) => {
@@ -17,9 +39,8 @@ export class BlogContent extends Component {
     temp.liked = !temp.liked;
 
     axios
-      .put(`https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb/${blogPost.id}`, temp)
+      .put(`${postUrl}/${blogPost.id}`, temp)
       .then((response) => {
-        console.log(response.data);
         this.fetchPosts();
       })
       .catch((err) => {
@@ -32,9 +53,24 @@ export class BlogContent extends Component {
       IsPending: true,
     });
     axios
-      .post(`https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb`, blogPost)
+      .post(postUrl, blogPost)
       .then((response) => {
         console.log(response.data);
+        this.fetchPosts();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  editBlogPost = (updatedBlogPost) => {
+    this.setState({
+      IsPending: true,
+    });
+
+    axios
+      .put(`${postUrl}/${updatedBlogPost.id}`, updatedBlogPost)
+      .then((response) => {
         this.fetchPosts();
       })
       .catch((err) => {
@@ -68,24 +104,28 @@ export class BlogContent extends Component {
     });
   };
 
+  handleEditFormHide = () => {
+    this.setState({
+      showEditForm: false,
+    });
+  };
+
+  handleEditFormShow = () => {
+    this.setState({
+      showEditForm: true,
+    });
+  };
+
+  handleSelectPost = (blogPost) => {
+    this.setState({
+      selectedPost: blogPost,
+    });
+  };
+
   handleEscpe = (e) => {
     if (e.key == "Escape" && this.state.showAddForm) {
       this.handleAddFormHide();
     }
-  };
-
-  fetchPosts = () => {
-    axios
-      .get("https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb")
-      .then((response) => {
-        this.setState({
-          blogArray: response.data,
-          IsPending: false,
-        });
-      })
-      .catch((error) => {
-        console.error("Ошибка запроса на сервер: " + error);
-      });
   };
 
   componentDidMount() {
@@ -94,10 +134,14 @@ export class BlogContent extends Component {
   }
   componentWillUnmount() {
     window.removeEventListener("keyup", this.handleEscpe);
+
+    if (controller) {
+      controller.abort();
+    }
   }
 
   render() {
-    const blogPosts = this.state.blogArray.map((item, pos) => {
+    const blogPosts = this.state.blogArray.map((item) => {
       return (
         <BlogCard
           key={item.id}
@@ -106,6 +150,8 @@ export class BlogContent extends Component {
           likePost={() => this.likePost(item)}
           liked={item.liked}
           deletePost={() => this.deletePost(item)}
+          handleEditFormShow={this.handleEditFormShow}
+          handleSelectPost={() => this.handleSelectPost(item)}
         />
       );
     });
@@ -119,6 +165,15 @@ export class BlogContent extends Component {
             addNewBlogPost={this.addNewBlogPost}
             blogArray={this.state.blogArray}
             showAddForm={this.state.showAddForm}
+          />
+        )}
+
+        {this.state.showEditForm && (
+          <EditFormPost
+            selectedPost={this.state.selectedPost}
+            showEditForm={this.state.showEditForm}
+            handleEditFormHide={this.handleEditFormHide}
+            editBlogPost={this.editBlogPost}
           />
         )}
 

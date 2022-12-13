@@ -13,20 +13,17 @@
 }
 
 .mainHeader a {
+  font-weight: 500;
   transition: all 0.2s linear;
   border-bottom: 2px solid transparent;
   font-size: 18px;
 
   display: inline-block;
   margin: 0 10px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .mainHeader a:hover {
-  color: #d15700;
+  color: crimson;
 }
 
 .btn {

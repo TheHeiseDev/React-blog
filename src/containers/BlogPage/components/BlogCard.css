@@ -1,0 +1,26 @@
+.post {
+  display: flex;
+  align-items: flex;
+  justify-content: space-between;
+}
+
+.postDelete svg {
+  font-size: 32px;
+}
+.postDelete svg:hover {
+  fill: blue;
+}
+
+.postEdit svg {
+  font-size: 24px;
+}
+.postEdit svg:hover {
+  fill: crimson;
+}
+.postControl {
+  display: flex;
+  align-items: center;
+}
+.postControl button {
+  padding: 0;
+}

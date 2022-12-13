@@ -70,8 +70,9 @@ export class AddPostForm extends Component {
               className="AddFormInput"
               name="postDescription"
               placeholder="Описание поста..."
-              value={this.state.handlePostDescChange}
+              value={this.state.postDesc}
               onChange={this.handlePostDescChange}
+              rows={8}
               required
             />
           </div>

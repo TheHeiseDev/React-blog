@@ -1,15 +1,25 @@
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import style from "./Header.module.css";
+import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 
-export const Header = () => {
+export const Header = ({ isLoggedIn, setisLoggedIn, userName }) => {
+  const handleLogOut = () => {
+    localStorage.setItem("isLoggedIn", false);
+    setisLoggedIn(false);
+  };
   return (
     <header className={style.mainHeader}>
-      <nav>
-        <NavLink exact to="/">
-          Home
-        </NavLink>
-        <NavLink to="login">Login</NavLink>
-      </nav>
+      {isLoggedIn ? (
+        <nav>
+          Добро пожаловать, &nbsp;<strong>{userName}</strong>
+          <NavLink onClick={handleLogOut} exact to="/login">
+            <MeetingRoomIcon />
+            Выход
+          </NavLink>
+        </nav>
+      ) : (
+        "Добро пожаловать "
+      )}
     </header>
   );
 };

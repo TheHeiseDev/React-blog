@@ -83,9 +83,13 @@ export class BlogPage extends Component {
       IsPending: true,
     });
     if (window.confirm(`Удалить: ${blogPost.title}?`)) {
-      axios.delete(`https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb/${blogPost.id}`).then((response) => {
-        this.fetchPosts();
-      });
+      axios
+        .delete(
+          `https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb/${blogPost.id}`
+        )
+        .then((response) => {
+          this.fetchPosts();
+        });
     } else {
       this.setState({
         IsPending: false,
@@ -135,9 +139,9 @@ export class BlogPage extends Component {
   componentWillUnmount() {
     window.removeEventListener("keyup", this.handleEscpe);
 
-    if (controller) {
-      controller.abort();
-    }
+    // if (controller) {
+    //   controller.abort();
+    // }
   }
 
   render() {
@@ -185,7 +189,10 @@ export class BlogPage extends Component {
             </button>
           </div>
 
-          <div className="posts" style={{ opacity: this.state.IsPending && 0.5 }}>
+          <div
+            className="posts"
+            style={{ opacity: this.state.IsPending && 0.5 }}
+          >
             {blogPosts}
           </div>
           {this.state.IsPending && <CircularProgress className="preloader" />}

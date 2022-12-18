@@ -1,6 +1,6 @@
 import "./EditFormPost.css";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { Component, useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 
 export const EditFormPost = (props) => {

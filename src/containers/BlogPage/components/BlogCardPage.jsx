@@ -7,11 +7,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { postUrl } from "../../../components/shared/projectData";
 
-export const BlogCard = ({
-  id,
-  title,
-  description,
-  liked,
+export const BlogCardPage = ({
   likePost,
   deletePost,
   handleEditFormShow,
@@ -26,34 +22,27 @@ export const BlogCard = ({
   const { postId } = useParams();
   const [post, setPost] = useState({});
 
-  let heartFill;
-  if (postId) {
-    heartFill = post.liked ? "crimson" : "black";
-  } else {
-    heartFill = liked ? "crimson" : "black";
-  }
+  const heartFill = post.liked ? "crimson" : "black";
 
   useEffect(() => {
-    if (postId) {
-      axios
-        .get(postUrl + postId)
-        .then((response) => {
-          // setBlogArray(response.data);
-          // setIsPending(false);
-          setPost(response.data);
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("Ошибка запроса на сервер: " + error);
-        });
-    }
+    axios
+      .get(postUrl + postId)
+      .then((response) => {
+        // setBlogArray(response.data);
+        // setIsPending(false);
+        setPost(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Ошибка запроса на сервер: " + error);
+      });
   }, [postId, setPost]);
 
   return (
-    <div key={id} className="post">
+    <div className="post">
       <div className="postContnet">
-        <h2>{postId ? post.title : title}</h2>
-        <p>{postId ? post.description : description}</p>
+        <h2>{post.title}</h2>
+        <p>{post.description}</p>
         <div>
           <button onClick={likePost}>
             <FavoriteIcon style={{ fill: heartFill }} />

@@ -1,13 +1,13 @@
 import "./App.css";
 import { Header } from "./components/Header/Header";
 import { Footer } from "./components/Footer/Footer";
-import { BlogPage } from "./containers/BlogPage/BlogPage";
+import { Blog } from "./pages/Blog/Blog";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { LoginPage } from "./containers/LoginPage/LoginPage";
+import { LoginPage } from "./pages/Login/Login";
 import { useState } from "react";
-import { NoMatch } from "./containers/BlogPage/components/NoMatch/NoMatch";
+import { NoMatch } from "./pages/NoMatch/NoMatch";
 
-import { BlogCardPage } from "./containers/BlogPage/components/BlogCardPage";
+import { SingleBlogPost } from "./pages/SingleBlogPost/SingleBlogPost";
 
 export function App(props) {
   const localUserAuth = localStorage.getItem("isLoggedIn") === "true";
@@ -32,11 +32,7 @@ export function App(props) {
           <Route
             path="/"
             element={
-              isLoggedIn ? (
-                <BlogPage isAdmin={isAdmin} />
-              ) : (
-                <Navigate to="/login" />
-              )
+              isLoggedIn ? <Blog isAdmin={isAdmin} /> : <Navigate to="/login" />
             }
           />
           <Route
@@ -58,7 +54,7 @@ export function App(props) {
             path="blog/:postId"
             element={
               isLoggedIn ? (
-                <BlogCardPage isAdmin={isAdmin} />
+                <SingleBlogPost isAdmin={isAdmin} />
               ) : (
                 <Navigate to="/login" />
               )
@@ -68,11 +64,7 @@ export function App(props) {
           <Route
             path="/blog"
             element={
-              isLoggedIn ? (
-                <BlogPage isAdmin={isAdmin} />
-              ) : (
-                <Navigate to="/login" />
-              )
+              isLoggedIn ? <Blog isAdmin={isAdmin} /> : <Navigate to="/login" />
             }
           />
 

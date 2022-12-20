@@ -1,43 +1,29 @@
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
-import { postUrl } from "./projectData";
+import { POSTS_URL } from "./constants";
 
 export const useGetPosts = () => {
-  return useQuery(
-    "posts",
-    () => {
-      return axios
-        .get(postUrl)
-        .then((res) => res.data)
-        .catch((err) => {
-          throw new Error(err);
-        });
-    },
-    {
-      refetchOnWindowFocus: false, //Запретить автообновление постов (отправку запроса на фоне и при переключении вкладок в браузере)
-      //   staleTime: 1000 * 2, //Сделает новый запрос через такой промежуток времени один раз
-    }
-  );
+  return useQuery("posts", () => {
+    return axios
+      .get(POSTS_URL)
+      .then((res) => res.data)
+      .catch((err) => {
+        throw new Error(err);
+      });
+  });
 };
 
 // Метод получения одного поста по id
 export const useGetOnePosts = (postId) => {
-  return useQuery(
-    ["post", postId],
-    () => {
-      return axios
-        .get(postUrl + postId)
-        .then((res) => res.data)
-        .catch((err) => {
-          throw new Error(err);
-        });
-    },
-    {
-      refetchOnWindowFocus: false, //Запретить автообновление постов (отправку запроса на фоне и при переключении вкладок в браузере)
-      //   staleTime: 1000 * 2, //Сделает новый запрос через такой промежуток времени один раз
-    }
-  );
+  return useQuery(["post", postId], () => {
+    return axios
+      .get(POSTS_URL + postId)
+      .then((res) => res.data)
+      .catch((err) => {
+        throw new Error(err);
+      });
+  });
 };
 
 // Метод с помощью которого лайкаем посты
@@ -46,7 +32,7 @@ export const useLikePost = () => {
   return useMutation(
     (updatedPost) => {
       return axios
-        .put(`${postUrl}/${updatedPost.id}`, updatedPost)
+        .put(`${POSTS_URL}/${updatedPost.id}`, updatedPost)
         .then((res) => res.data)
         .catch((err) => {
           throw new Error(err);
@@ -87,7 +73,7 @@ export const useDeletePost = () => {
   return useMutation(
     (blogPost) => {
       return axios
-        .delete(`${postUrl}/${blogPost.id}`)
+        .delete(`${POSTS_URL}/${blogPost.id}`)
         .then((res) => res.data)
         .catch((err) => {
           throw new Error(err);
@@ -115,7 +101,7 @@ export const useEditPost = () => {
   return useMutation(
     (updatedPost) => {
       return axios
-        .put(`${postUrl}/${updatedPost.id}`, updatedPost)
+        .put(`${POSTS_URL}/${updatedPost.id}`, updatedPost)
         .then((res) => res.data)
         .catch((err) => {
           throw new Error(err);
@@ -141,7 +127,7 @@ export const useAddPost = () => {
   return useMutation(
     (newBlogPost) => {
       return axios
-        .post(postUrl, newBlogPost)
+        .post(POSTS_URL, newBlogPost)
         .then((res) => res.data)
         .catch((err) => {
           throw new Error(err);

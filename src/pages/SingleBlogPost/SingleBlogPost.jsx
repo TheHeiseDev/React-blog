@@ -1,19 +1,19 @@
-import "./BlogCard.css";
+import "./SingleBlogPost.css";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import EditIcon from "@mui/icons-material/Edit";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { EditFormPost } from "./EditFormPost";
+import { EditFormPost } from "../../components/EditFormPost/EditFormPost";
 import { CircularProgress } from "@mui/material";
 import {
   useDeletePost,
   useEditPost,
   useGetOnePosts,
   useLikePost,
-} from "../../../components/shared/queries";
+} from "../../components/shared/queries";
 
-export const BlogCardPage = ({ isAdmin }) => {
+export const SingleBlogPost = ({ isAdmin }) => {
   const { postId } = useParams();
 
   const [selectedPost, setSelectedPost] = useState({});

@@ -1,8 +1,9 @@
-import "./BlogPage.css";
-import { BlogCard } from "./components/BlogCard";
-import { AddPostForm } from "./components/AddPostForm";
+import "./Blog.css";
+// import { BlogCard } from "./components/BlogCard";
+
+import { AddPostForm } from "./AddPostForm/AddPostForm";
 import CircularProgress from "@mui/material/CircularProgress";
-import { EditFormPost } from "./components/EditFormPost";
+import { EditFormPost } from "../../components/EditFormPost/EditFormPost";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -13,9 +14,10 @@ import {
   useGetPosts,
   useLikePost,
 } from "../../components/shared/queries";
+import { PostCard } from "./PostCard/PostCard";
 
 let controller;
-export const BlogPage = ({ isAdmin }) => {
+export const Blog = ({ isAdmin }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
 
@@ -94,7 +96,7 @@ export const BlogPage = ({ isAdmin }) => {
   const blogPosts = posts.map((item) => {
     return (
       <React.Fragment key={item.id}>
-        <BlogCard
+        <PostCard
           title={item.title}
           description={item.description}
           likePost={() => likePost(item)}
@@ -111,7 +113,7 @@ export const BlogPage = ({ isAdmin }) => {
   });
 
   return (
-    <div className="blogPage">
+    <div className="Blog">
       {showAddForm && (
         <AddPostForm
           handleAddFormHide={handleAddFormHide}

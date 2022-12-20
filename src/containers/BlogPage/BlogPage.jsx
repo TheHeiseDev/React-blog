@@ -1,90 +1,76 @@
 import "./BlogPage.css";
 import { BlogCard } from "./components/BlogCard";
 import { AddPostForm } from "./components/AddPostForm";
-import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import { EditFormPost } from "./components/EditFormPost";
-import { postUrl } from "../../components/shared/projectData";
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import {
+  useAddPost,
+  useDeletePost,
+  useEditPost,
+  useGetPosts,
+  useLikePost,
+} from "../../components/shared/queries";
 
 let controller;
 export const BlogPage = ({ isAdmin }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
-  const [blogArray, setBlogArray] = useState([]);
-  const [IsPending, setIsPending] = useState(false);
+
+  // const [IsPending, setIsPending] = useState(false);
   const [selectedPost, setSelectedPost] = useState({});
 
-  const fetchPosts = () => {
-    controller = new AbortController();
-    axios
-      .get(postUrl, {
-        signal: controller.signal,
-      })
-      .then((response) => {
-        setBlogArray(response.data);
-        setIsPending(false);
-      })
-      .catch((error) => {
-        console.error("Ошибка запроса на сервер: " + error);
-      });
-  };
+  const {
+    data: posts,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+    refetch,
+  } = useGetPosts();
+  const likeMutation = useLikePost();
+  const deleteMutation = useDeletePost();
+  const editMutation = useEditPost();
+  const addMutation = useAddPost();
+
+  useEffect(() => {
+    const handleEscpe = (e) => {
+      if (e.key == "Escape" && showAddForm) {
+        handleAddFormHide();
+      }
+    };
+    window.addEventListener("keyup", handleEscpe);
+    // fetchPosts();
+
+    return () => {
+      window.removeEventListener("keyup", handleEscpe);
+    };
+  }, [showAddForm]);
+
+  if (isLoading) return <h1>Загружаю данные...</h1>;
+  if (isError) return <h1>{error.message}</h1>;
 
   const likePost = (blogPost) => {
-    const temp = { ...blogPost };
-    temp.liked = !temp.liked;
-
-    axios
-      .put(`${postUrl}/${blogPost.id}`, temp)
-      .then((response) => {
-        fetchPosts();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const updatedPost = { ...blogPost };
+    updatedPost.liked = !updatedPost.liked;
+    likeMutation.mutate(updatedPost);
   };
-
-  const addNewBlogPost = (blogPost) => {
-    setIsPending(true);
-    axios
-      .post(postUrl, blogPost)
-      .then((response) => {
-        fetchPosts();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const deletePost = (blogPost) => {
+    if (window.confirm(`Удалить: ${blogPost.title}?`)) {
+      deleteMutation.mutate(blogPost);
+    }
   };
 
   const editBlogPost = (updatedBlogPost) => {
-    setIsPending(true);
-
-    axios
-      .put(`${postUrl}/${updatedBlogPost.id}`, updatedBlogPost)
-      .then((response) => {
-        fetchPosts();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    editMutation.mutate(updatedBlogPost);
   };
 
-  const deletePost = (blogPost) => {
-    setIsPending(true);
-    if (window.confirm(`Удалить: ${blogPost.title}?`)) {
-      axios
-        .delete(
-          `https://6395a48c90ac47c6806fbfa0.mockapi.io/mydb/${blogPost.id}`
-        )
-        .then((response) => {
-          fetchPosts();
-        });
-    } else {
-      setIsPending(false);
-    }
+  const addNewBlogPost = (newBlogPost) => {
+    addMutation.mutate(newBlogPost);
   };
+
   const handleAddFormShow = () => {
     setShowAddForm(true);
   };
@@ -105,22 +91,7 @@ export const BlogPage = ({ isAdmin }) => {
     setSelectedPost(blogPost);
   };
 
-  const handleEscpe = (e) => {
-    if (e.key == "Escape" && showAddForm) {
-      handleAddFormHide();
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("keyup", handleEscpe);
-    fetchPosts();
-
-    return () => {
-      window.removeEventListener("keyup", handleEscpe);
-    };
-  }, []);
-
-  const blogPosts = blogArray.map((item) => {
+  const blogPosts = posts.map((item) => {
     return (
       <React.Fragment key={item.id}>
         <BlogCard
@@ -139,14 +110,12 @@ export const BlogPage = ({ isAdmin }) => {
     );
   });
 
-  if (blogArray.length === 0) return <h1>Загружаю данные...</h1>;
   return (
     <div className="blogPage">
       {showAddForm && (
         <AddPostForm
           handleAddFormHide={handleAddFormHide}
           addNewBlogPost={addNewBlogPost}
-          blogArray={blogArray}
           showAddForm={showAddForm}
         />
       )}
@@ -171,10 +140,10 @@ export const BlogPage = ({ isAdmin }) => {
           </div>
         )}
 
-        <div className="posts" style={{ opacity: IsPending && 0.5 }}>
+        <div className="posts" style={{ opacity: isFetching && 0.5 }}>
           {blogPosts}
         </div>
-        {IsPending && <CircularProgress className="preloader" />}
+        {isFetching && <CircularProgress className="preloader" />}
       </>
     </div>
   );

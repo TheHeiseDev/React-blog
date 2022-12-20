@@ -8,13 +8,6 @@ export const LoginPage = (props) => {
   const handleLogIn = (e) => {
     e.preventDefault();
 
-    // Проверка доступа к админской панели
-    // if (login === "admin" && password === "admin") {
-    //   props.setIsAdmin(true);
-    // } else {
-    //   props.setIsAdmin(false);
-    // }
-
     if (login === "admin") {
       if (password === "admin") {
         props.setIsAdmin(true);
@@ -22,11 +15,10 @@ export const LoginPage = (props) => {
         alert("Введите правильный логин или пароль");
         return false;
       }
-
-      localStorage.setItem("isLoggedIn", true);
-      localStorage.setItem("userName", login);
     }
 
+    localStorage.setItem("isLoggedIn", true);
+    localStorage.setItem("userName", login);
     props.setUserName(login);
     props.setisLoggedIn(true);
     navigate("/blog", { replace: true }); //перенаправление на главную страницу после авторизации

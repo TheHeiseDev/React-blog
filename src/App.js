@@ -6,11 +6,11 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "./containers/LoginPage/LoginPage";
 import { useState } from "react";
 import { NoMatch } from "./containers/BlogPage/components/NoMatch/NoMatch";
-import { BlogCard } from "./containers/BlogPage/components/BlogCard";
+
 import { BlogCardPage } from "./containers/BlogPage/components/BlogCardPage";
 
 export function App(props) {
-  const localUserAuth = localStorage.getItem("isLoggedIn") || "false";
+  const localUserAuth = localStorage.getItem("isLoggedIn") === "true";
   const localIsAdmin = localStorage.getItem("userName") === "admin";
   const localUserName = localStorage.getItem("userName");
 
@@ -30,7 +30,6 @@ export function App(props) {
       <main>
         <Routes>
           <Route
-            exact
             path="/"
             element={
               isLoggedIn ? (
@@ -40,9 +39,7 @@ export function App(props) {
               )
             }
           />
-
           <Route
-            exact
             path="/login"
             element={
               !isLoggedIn ? (
@@ -57,15 +54,18 @@ export function App(props) {
               )
             }
           />
-
           <Route
-            exact
             path="blog/:postId"
-            element={<BlogCardPage isAdmin={isAdmin} />}
+            element={
+              isLoggedIn ? (
+                <BlogCardPage isAdmin={isAdmin} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
           />
 
           <Route
-            exact
             path="/blog"
             element={
               isLoggedIn ? (
@@ -76,8 +76,8 @@ export function App(props) {
             }
           />
 
-          <Route exact path="*" element={<Navigate to="/404" />} />
-          <Route exact path="/404" element={<NoMatch />} />
+          <Route path="*" element={<Navigate to="/404" />} />
+          <Route path="/404" element={<NoMatch />} />
         </Routes>
       </main>
 

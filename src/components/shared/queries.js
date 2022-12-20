@@ -1,7 +1,7 @@
-import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { POSTS_URL } from "./constants";
+import axios from "axios";
 
 export const useGetPosts = () => {
   return useQuery("posts", () => {
